@@ -1,3 +1,5 @@
+require 'open-uri'
+
 use Rack::Static, 
   :urls => ["/css", "/img", "/js"],
   :root => "public"
