@@ -121,14 +121,13 @@
           }
           
           return false;
-        })
         }
       }
 
       jQuery(function () {
         GdsExplorer.load_topics();
   
-        jQuery('#search-form').submit(function () {
+        jQuery('#search-form').submit(GdsExploer.handle_search);
           
       })
     </script>
