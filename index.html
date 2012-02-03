@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>GOV.UK API Explorer</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="./css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="./css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="./images/favicon.ico">
+    <link rel="apple-touch-icon" href="./images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="./images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./images/apple-touch-icon-114x114.png">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">GOV.UK</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="https://www.gov.uk">Home</a></li>
+              <li><a href="http://digital.cabinetoffice.gov.uk">Blog</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h1>GOV.UK API Explorer</h1>
+        <p>The beta of GOV.UK, launched Feb 1st 2012, includes a first view of a JSON API for the single domain. As with the rest of the site it's a work in progress and we're very keen to get feedback. This Explorer is designed to help people get a sense of how it fits together.</p>
+      </div>
+
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="span6">
+          <h2>Form</h2>
+          <form id="search-form">
+            <fieldset>
+              <p>
+                <label for="search">Enter a Search Term</label>
+                <input id="search" type="search" name="q">
+              </p>
+              <p>
+                <label for="browse">or Choose a Topic</label>
+                <select id="browse">
+                  <option></option>
+                </select>
+              </p>
+              <p>
+                <input class="btn" type="submit" value="Go">
+              </p>
+            </fieldset>
+          </form>
+        </div>
+        <div id="results" class="span6">
+          <h2>Result</h2>
+          <p id="url"></p>
+       </div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; <a href="http://twitter.com/jystewart">James Stewart</a></p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      var GdsExplorer = {
+        load_topics: function () {
+          var topic_list = $.getJSON('https://www.gov.uk/browse.json', function (data) {
+            var options = '';
+            for (i = 0; i <= data.length; i++) {
+              options.push('<option value="' + data[i] + '">' + data[i] + '</option>');
+            }
+            $('#browse').html(options);
+          });
+        },
+        
+        handle_search: function () {
+          if (jQuery('#search').val() != '') {
+            var url = "https://www.gov.uk/search.json?q=" + jQuery('#search').val();
+            jQuery("#url").text("URL: " + url);
+            $.getJSON(url + '&callback=?', function (data) {
+              console.log(data);
+            });
+          } else {
+            alert('woo!');
+          }
+          
+          return false;
+        })
+        }
+      }
+
+      jQuery(function () {
+        GdsExplorer.load_topics();
+  
+        jQuery('#search-form').submit(function () {
+          
+      })
+    </script>
+  </body>
+</html>
