@@ -100,7 +100,7 @@
     <script type="text/javascript" charset="utf-8">
       var GdsExplorer = {
         load_topics: function () {
-          var topic_list = $.getJSON('https://www.gov.uk/browse.json', function (data) {
+          var topic_list = $.getJSON('/api/browse.json', function (data) {
             var options = '';
             for (i = 0; i <= data.length; i++) {
               options.push('<option value="' + data[i] + '">' + data[i] + '</option>');
@@ -111,9 +111,9 @@
         
         handle_search: function () {
           if (jQuery('#search').val() != '') {
-            var url = "https://www.gov.uk/search.json?q=" + jQuery('#search').val();
-            jQuery("#url").text("URL: " + url);
-            $.getJSON(url + '&callback=?', function (data) {
+            var path = "/search.json?q=" + jQuery('#search').val();
+            jQuery("#url").text("URL: https://www.gov.uk" + path);
+            $.getJSON('/api' + path, function (data) {
               console.log(data);
             });
           } else {
