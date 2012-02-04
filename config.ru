@@ -7,7 +7,9 @@ use Rack::Static,
 run lambda { |env|
   request = Rack::Request.new(env)
   if request.path.match(/^\/api\/(.*)/)
-    body = open("https://www.gov.uk/#{$1}")
+    uri_to_fetch = "https://www.gov.uk/#{$1}"
+    uri_to_fetch += "?q=#{request.params['q']}" if request.params['q']
+    body = open(uri_to_fetch)
   else
     body = File.open('public/index.html', File::RDONLY)
   end

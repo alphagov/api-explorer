@@ -82,6 +82,7 @@
         <div id="results" class="span6">
           <h2>Result</h2>
           <p id="url"></p>
+          <pre id="result"></pre>
        </div>
       </div>
 
@@ -97,28 +98,30 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./js/json2.js"></script>
     <script type="text/javascript" charset="utf-8">
       var GdsExplorer = {
         load_topics: function () {
           var topic_list = $.getJSON('/api/browse.json', function (data) {
-            var options = '';
-            for (i = 0; i <= data.length; i++) {
-              options.push('<option value="' + data[i] + '">' + data[i] + '</option>');
+            var options = [];
+            for (i = 0; i <= data.length - 1; i++) {
+              options.push('<option value="' + data[i].url + '">' + data[i].url.replace('/browse/', '') + '</option>');
             }
-            $('#browse').html(options);
+            $('#browse').html(options.join(''));
           });
         },
         
         handle_search: function () {
           if (jQuery('#search').val() != '') {
             var path = "/search.json?q=" + jQuery('#search').val();
-            jQuery("#url").text("URL: https://www.gov.uk" + path);
-            $.getJSON('/api' + path, function (data) {
-              console.log(data);
-            });
           } else {
-            alert('woo!');
+            var path = $('#browse').val() + ".json";
           }
+
+          $("#url").text("URL: https://www.gov.uk" + path);
+          $.getJSON('/api' + path, function (data) {
+             $('#result').text(JSON.stringify(data), null, 4);
+          })
           
           return false;
         }
