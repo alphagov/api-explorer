@@ -53,14 +53,14 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1>GOV.UK API Explorer</h1>
+        <h1>GOV.UK (beta) API Explorer</h1>
         <p>The beta of GOV.UK, launched Feb 1st 2012, includes a first view of a JSON API for the single domain. As with the rest of the site it's a work in progress and we're very keen to get feedback. This Explorer is designed to help people get a sense of how it fits together.</p>
       </div>
 
       <!-- Example row of columns -->
       <div class="row">
         <div class="span4">
-          <h2>Form</h2>
+          <h2>Explore</h2>
           <form id="search-form">
             <fieldset>
               <p>
@@ -78,11 +78,14 @@
               </p>
             </fieldset>
           </form>
+
+          <h2 id="url-title" style="display: none">URLs Visited</h2>
+          <ul id="urls"></ul>
         </div>
         <div id="results" class="span8">
           <h2>Result</h2>
-          <p id="url"></p>
-          <pre id="result"></pre>
+
+          <pre class="prettyprint lang-js" id="result">Choose an Explore option on the left</pre>
        </div>
       </div>
 
@@ -99,39 +102,63 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script type="text/javascript" charset="utf-8" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="./js/json2.js"></script>
+    <link href="./js/prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="./js/prettify/prettify.js"></script>
     <script type="text/javascript" charset="utf-8">
       var GdsExplorer = {
         load_topics: function () {
           var topic_list = $.getJSON('/api/browse.json', function (data) {
-            var options = [];
+            var options = ['<option value=""></option>'];
             for (i = 0; i <= data.length - 1; i++) {
-              options.push('<option value="' + data[i].url + '">' + data[i].url.replace('/browse/', '') + '</option>');
+              options.push(
+                '<option value="' + data[i].url + '">' +
+                data[i].url.replace('/browse/', '') +
+                '</option>'
+              );
             }
-            $('#browse').html(options.join(''));
+            $('#browse').html('{' + options.join('') + '}');
+          });
+        },
+
+        process_content: function(data) {
+          content = JSON.stringify(data, null, 4);
+          content = content.replace(/"link": "(.+?)"/g, '"link": "<a href=\"$1\">$1</a>"')
+          return content.replace(/"url": "(.+?)"/g, '"url": "<a href=\"$1\">$1</a>"')
+        },
+        
+        load_resource: function (path) {
+          var full_path = path.match('.json') ? path : path + ".json";
+          $.getJSON('/api' + full_path, function (data) {
+            var content = GdsExplorer.process_content(data);
+            $('#result').html(content);
+            
+            GdsExplorer.update_url_list(full_path);
           });
         },
         
+        update_url_list: function (path) {
+          $('#url-title').show();
+          $("#urls").append('<li><a href="' + path + '">https://www.gov.uk' + path + '</a></li>');
+        },
+
         handle_search: function () {
           if (jQuery('#search').val() != '') {
             var path = "/search.json?q=" + jQuery('#search').val();
           } else {
             var path = $('#browse').val() + ".json";
           }
-
-          $("#url").text("URL: https://www.gov.uk" + path);
-          $.getJSON('/api' + path, function (data) {
-             $('#result').text(JSON.stringify(data), null, 4);
-          })
-          
+          GdsExplorer.load_resource(path);
           return false;
         }
       }
 
       jQuery(function () {
         GdsExplorer.load_topics();
-  
         jQuery('#search-form').submit(GdsExplorer.handle_search);
-          
+        $('#result, #urls').on('click', function (e) {
+          GdsExplorer.load_resource($(e.target).attr('href'));
+          return false;
+        })
       })
     </script>
   </body>
