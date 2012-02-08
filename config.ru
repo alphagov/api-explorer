@@ -1,7 +1,7 @@
 require 'open-uri'
 
 use Rack::Static, 
-  :urls => ["/css", "/img", "/js"],
+  :urls => ["/css", "/img", "/js", "/issues.html"],
   :root => "public"
 
 run lambda { |env|
